@@ -1,0 +1,109 @@
+
+
+#include <Servo.h>
+
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+#include <avr/power.h>
+#endif
+
+// Which pin on the Arduino is connected to the NeoPixels?
+// On a Trinket or Gemma we suggest changing this to 1
+#define PIN            6
+
+// How many NeoPixels are attached to the Arduino?
+#define NUMPIXELS      5
+
+// When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
+// Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
+// example for more information on possible values.
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
+
+Servo servo1; //create a servo object to control a servo
+int servoPos = 0; //stores the servo position
+int switchPin = 2;
+int xPin = A0;
+int yPin = A1;
+
+int mappedX;
+
+int mappedY;
+
+int switchstate;
+
+
+int button = 3;
+
+int buttonState = 0;
+
+int buzzer = 9;
+
+
+
+void setup() {
+  servo1.attach(5); //attaches servo to pin 9
+  pinMode(switchPin, INPUT);
+  pinMode(xPin, INPUT);
+  pinMode(yPin, INPUT);
+
+  pixels.begin();
+
+  pinMode(buzzer, OUTPUT);
+  pinMode(button, INPUT);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  for (int i = 0; i < NUMPIXELS; i++) {
+
+    // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
+    pixels.setPixelColor(i, pixels.Color(0, 150, 0)); // Moderately bright green color.
+
+    pixels.show(); // This sends the updated pixel color to the hardware.
+
+
+
+  }
+
+  mappedX = map(analogRead(xPin), 200, 900, 0, 170);
+
+  servo1.write(mappedX);
+
+  Serial.print("Switch:");
+  Serial.print(digitalRead(switchPin));
+  Serial.print("\n");
+
+
+  Serial.print("X:");
+  Serial.print(analogRead(xPin));
+  Serial.print("\n");
+
+
+  Serial.print("Y:");
+  Serial.print(analogRead(yPin));
+  Serial.print("\n");
+
+  buttonState = digitalRead(button);
+
+  if (buttonState == HIGH) {
+    tone(buzzer, 600);
+  } else {
+    noTone(buzzer);
+  }
+
+
+  Serial.println(mappedX);
+
+
+}
+//for(servoPos=0;servoPos<=177;servoPos+=1){
+// servo1.write(servoPos);
+// delay(15);
+
+
+//for(servoPos=177;servoPos>=0;servoPos-=1){
+//servo1.write(servoPos);
+//delay(15);}
