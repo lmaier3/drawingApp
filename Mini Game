@@ -1,0 +1,336 @@
+
+import processing.sound.*;
+
+import processing.serial.*;
+PImage girl;
+PImage monster;
+PImage mo;
+PImage mon;
+PImage rock1;
+PImage rock2;
+PImage rock3;
+
+PShape square;
+
+SoundFile sound;
+
+float ellipseX = 50;
+float ellipseY = 50;
+
+float ellipseeX= 1400;
+float ellipseeY= 50; 
+
+float elX= 50;
+float elY= 800;
+
+float elliX= 1400;
+float elliY= 800;
+
+float monster1X = 0;
+float monster1Y = 0;
+float monster2X = 0;
+float monster2Y = 0;
+float monster3X = 0;
+float monster3Y = 0;
+float monster4X = 0;
+float monster4Y = 0; 
+
+float leftMoX;
+float leftMoY;
+
+float rightMonX;
+float rightMonY;
+
+float rock1X;
+float rock1Y;
+float rock2X;
+float rock2Y;
+float rock3X;
+float rock3Y;
+
+int score=0;
+
+float xPos;
+float yPos;
+
+float xSpeed;
+float ySpeed;
+
+float heroX;
+float heroY;
+
+float x; 
+float y; 
+
+boolean start  = true;
+int timer;
+int gameTimer = 60;
+
+float switchValue = 1; 
+int BG;
+
+int counter;
+
+Serial myPort;
+
+void setup() {
+  size(displayWidth, displayHeight);
+
+  leftMoX = 83;
+  leftMoY = displayHeight/2;
+  rightMonX = 700;
+  rightMonY = 770;
+  rock1X = displayWidth/4;
+  rock1Y = 500;
+  rock2X = displayWidth/2;
+  rock2Y = 200;
+  rock3X =1100;
+  rock3Y = 500;
+
+  myPort = new Serial(this, Serial.list()[4], 9600);
+  myPort.bufferUntil('\n');
+
+  //print(Serial.list());
+  BG = 0;
+  imageMode(CENTER);
+  girl=loadImage("girl.PNG");
+  monster=loadImage("monster.PNG");
+  mo=loadImage("mo.PNG");
+  mon=loadImage("mon.PNG");
+  rock1=loadImage("rock1.PNG");
+  rock2=loadImage("rock2.PNG");
+  rock3=loadImage("rock3.PNG");
+  sound= new SoundFile(this, "Super.wav");
+  sound.play();
+  //sound.loop();
+  xPos=random(monster.width/2, width-monster.width);
+  yPos=random(monster.height/2, height-monster.height/2);
+
+
+  xSpeed=4;
+  ySpeed=4;
+
+
+  heroX = width/2;
+  heroY = height/2;
+
+
+  counter = 0;
+
+  print(displayWidth);
+}
+
+void draw() {
+
+  if (start ==true) {
+    game();
+  } else {
+    end();
+  }
+}
+
+void game() {
+  counter++;
+  background(0);
+  line(0, 300, 300, 0);
+  stroke(255);
+  line(0, 2000, 2000, 0);
+  stroke(255);
+  line(1500, 350, 1150, 0);
+  stroke(255);
+  line(0, 550, 300, 900);
+  stroke(255);
+
+  textSize(45);
+  text(score, displayWidth/2, 350);
+  text(gameTimer, displayWidth/2, 50);
+
+
+  //image(rock1, displayWidth/4, 500, 300, 250);
+  //image(rock2, displayWidth/2, 200, 300, 200);
+  //image(rock3, 1100, 500, 400, 300);
+
+
+  if (millis() - timer >= 1000) {
+    gameTimer = gameTimer-1;
+    timer = millis();
+  }
+
+
+
+  ellipse(ellipseX, ellipseY, 200, 200);
+  fill(random(255), 187, 255);
+
+
+
+  float d =dist(ellipseX, ellipseY, heroX, heroY);
+  if (d<100) {
+    score= score+10;
+    heroX = width/2;
+    heroY = height/2;
+  }
+
+  ellipse(ellipseeX, ellipseeY, 200, 200);
+  float de=dist(ellipseeX, ellipseeY, heroX, heroY);
+  if (de<100) {
+    score= score+40;
+    heroX = width/2;
+    heroY = height/2;
+  }
+
+  ellipse(elX, elY, 200, 200);
+  float ded=dist(elX, elY, heroX, heroY);
+  if (ded<100) {
+    score= score+20;
+    heroX = width/2;
+    heroY = height/2;
+  }
+
+  ellipse(elliX, elliY, 200, 200);
+  float dedd=dist(elliX, elliY, heroX, heroY);
+  if (dedd<100) {
+    score= score+60;
+    heroX = width/2;
+    heroY = height/2;
+  }
+
+  //image(girl, heroX, heroY, 150, 150);
+
+  println(score);
+
+
+  if (x <= 525) {
+    heroX = heroX-6;
+  }
+  if (x>531) {
+    heroX= heroX+6;
+  }
+  if (y<= 510) {
+    heroY=heroY-6;
+  }
+  if (y>516) {
+    heroY = heroY+6;
+  }
+
+
+  image(rock1, displayWidth/4, 500, 300, 250);
+  float r=dist(rock1X, rock1Y, heroX, heroY);
+  if (r<200) {
+    score=0;
+    heroX=width/2;
+    heroY=height/2;
+  }
+
+  image(rock2, displayWidth/2, 200, 300, 200);
+  float ro=dist(rock2X, rock2Y, heroX, heroY);
+  if (ro<160) {
+    score=0;
+    heroX=width/2;
+    heroY=height/2;
+  }
+
+  image(rock3, 1100, 500, 400, 300);
+  float roc=dist(rock3X, rock3Y, heroX, heroY);
+  if (roc<200) {
+    score=0;
+    heroX=width/2;
+    heroY=height/2;
+  }
+
+  xPos=xPos+xSpeed;
+  yPos=yPos+ySpeed;
+
+  pushMatrix();
+  translate(width/2, height/2);
+  rotate(radians(-counter/2));
+  translate(650, 0);
+  rotate(radians(counter/2));
+  image(monster, monster1X, monster1Y, 140, 140);
+  popMatrix();
+
+  pushMatrix();
+  translate(width/2, height/2);
+  rotate(radians(counter));
+  translate(600, 0);
+  rotate(radians(-counter));
+  image(monster, monster2X, monster2Y, 140, 140);
+  popMatrix();
+
+  pushMatrix();
+  translate(width/2, height/2);
+  rotate(radians(counter/2));
+  translate(380, 0);
+  rotate(radians(-counter/2));
+  image(monster, monster3X, monster3Y, 150, 150);
+  popMatrix();
+
+  pushMatrix();
+  translate(width/2, height/2);
+  rotate(radians(-counter));
+  translate(250, 0);
+  rotate(radians(counter));
+  image(monster, monster4X, monster4Y, 140, 140);
+  popMatrix();
+
+  image(mo, leftMoX, leftMoY, 150, 150);
+
+  float di=dist(leftMoX, leftMoY, heroX, heroY);
+  if (di<100) {
+    score=0;
+    heroX=width/2;
+    heroY=height/2;
+  }
+
+  image(mon, 700, 770, 150, 150);
+
+  float du=dist(rightMonX, rightMonY, heroX, heroY);
+  if (du<100) {
+    score=0;
+    heroX=width/2;
+    heroY=height/2;
+  }
+
+  image(girl, heroX, heroY, 150, 150);
+
+  if (gameTimer == 0) {
+    start = false;
+  }
+}
+
+void end() {
+  background(0);
+  image(girl, 1000, 600, 500, 500);
+  textSize(100);
+  text("HIGHSCORE", displayWidth/4, height/4);
+  text(score, displayWidth/4, height/2);
+  fill(random(255), 187, 255);
+ 
+}
+
+void serialEvent(Serial myPort) {
+
+  String inString = myPort.readStringUntil('\n');
+
+  if (inString != null) {
+
+    //trim off any whitespace
+    inString = trim(inString);
+
+    //split the string at the commas and convert the
+    //resulting substrings into an array
+    float[] sensors = float(split(inString, ","));
+
+    if (sensors.length >= 3) {
+      for (int i = 0; i < sensors.length; i++) {
+        println("Value" + i + "=" + sensors[i]);
+        //there are only 3 sensors coming from Arduino at the moment
+        //x value from joystick is in the first array position [0]
+        //y value from joystick is in the second array position [1]
+        //switch value from joystick is in the third array position [2]
+        x = sensors[0];
+        y = sensors[1];
+        switchValue = sensors[2];
+      }
+    }
+  }
+}
